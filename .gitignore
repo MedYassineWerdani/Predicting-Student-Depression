@@ -10,8 +10,7 @@ __pycache__/
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
-# Trained models
-models/*.pkl
+
 
 # OS-specific files
 .DS_Store
