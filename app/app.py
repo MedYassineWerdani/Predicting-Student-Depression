@@ -4,6 +4,7 @@ from mysql.connector import Error
 from streamlit_option_menu import option_menu
 import os # Import os module
 from dotenv import load_dotenv # Import load_dotenv
+import datetime # Added datetime import
 
 # Load environment variables from .env file
 load_dotenv()
@@ -91,6 +92,24 @@ def get_db_connection():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """)
+        
+        # Create prediction_history table
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS prediction_history (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                model_used VARCHAR(50),
+                rf_prediction FLOAT,
+                xgb_prediction FLOAT,
+                lr_prediction FLOAT,
+                ensemble_prediction FLOAT,
+                risk_level VARCHAR(20),
+                features JSON,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            );
+        """)
+        
         conn.commit()
         cursor.close()
         return conn
@@ -138,7 +157,7 @@ def register_user(email, username, password):
 def login_user(identifier, password): # Changed parameter name from username to identifier
     conn = get_db_connection()
     if conn is None:
-        return False
+        return False, None
     cursor = conn.cursor(dictionary=True) # Fetch as dict
     try:
         # Check if the identifier matches either username or email
@@ -148,12 +167,97 @@ def login_user(identifier, password): # Changed parameter name from username to 
         if user:
             # Simple plain text comparison (as used in registration)
             # NOTE: In a real app, verify hashed password here
-            return True # User found and password matches
+            return True, user # User found and password matches
         else:
-            return False # User not found or password incorrect
+            return False, None # User not found or password incorrect
     except Error as e:
         st.error(f"Login error: {e}")
+        return False, None
+    finally:
+        cursor.close()
+        conn.close()
+
+# --- Save prediction to database ---
+def save_prediction_to_db(user_id, prediction_data):
+    conn = get_db_connection()
+    if conn is None:
         return False
+    
+    cursor = conn.cursor()
+    try:
+        # Convert features to JSON string
+        import json
+        features_json = json.dumps(prediction_data['features'])
+        
+        # Insert prediction into database
+        query = """
+            INSERT INTO prediction_history 
+            (user_id, model_used, rf_prediction, xgb_prediction, lr_prediction, 
+             ensemble_prediction, risk_level, features)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        
+        cursor.execute(query, (
+            user_id,
+            prediction_data['model_used'],
+            prediction_data['rf_prediction'],
+            prediction_data['xgb_prediction'],
+            prediction_data['lr_prediction'],
+            prediction_data['ensemble_prediction'],
+            prediction_data['risk_level'],
+            features_json
+        ))
+        
+        conn.commit()
+        return True
+    except Error as e:
+        st.error(f"Failed to save prediction: {e}")
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+# --- Load prediction history from database ---
+def load_prediction_history(user_id):
+    conn = get_db_connection()
+    if conn is None:
+        return []
+    
+    cursor = conn.cursor(dictionary=True)
+    try:
+        # Get all predictions for this user
+        query = """
+            SELECT * FROM prediction_history 
+            WHERE user_id = %s
+            ORDER BY timestamp DESC
+        """
+        
+        cursor.execute(query, (user_id,))
+        predictions = cursor.fetchall()
+        
+        # Process predictions
+        history = []
+        for pred in predictions:
+            # Convert JSON string back to dictionary
+            import json
+            features = json.loads(pred['features'])
+            
+            # Format for consistency with session state format
+            history.append({
+                'timestamp': pred['timestamp'].strftime("%Y-%m-%d %H:%M:%S"),
+                'model_used': pred['model_used'],
+                'rf_prediction': pred['rf_prediction'],
+                'xgb_prediction': pred['xgb_prediction'],
+                'lr_prediction': pred['lr_prediction'],
+                'ensemble_prediction': pred['ensemble_prediction'],
+                'risk_level': pred['risk_level'],
+                'features': features
+            })
+        
+        return history
+    except Error as e:
+        st.error(f"Failed to load prediction history: {e}")
+        return []
     finally:
         cursor.close()
         conn.close()
@@ -212,29 +316,22 @@ def main():
             if submitted:
                 if not identifier or not password:
                     st.warning("Please enter both username/email and password.")
-                elif login_user(identifier, password): # Pass identifier to login_user
-                    st.session_state['logged_in'] = True
-                    # Fetch username if identifier was email (optional, but good for display)
-                    conn = get_db_connection()
-                    if conn:
-                        cursor = conn.cursor(dictionary=True)
-                        cursor.execute("SELECT username FROM users WHERE username=%s OR email=%s", (identifier, identifier))
-                        user_data = cursor.fetchone()
-                        if user_data:
-                            st.session_state['username'] = user_data['username']
-                        else: 
-                            st.session_state['username'] = identifier # Fallback if fetch fails
-                        cursor.close()
-                        conn.close()
-                    else:
-                         st.session_state['username'] = identifier # Fallback if DB connection fails
-                         
-                    st.success(f"Welcome back, {st.session_state['username']}!")
-                    st.balloons()
-                    st.snow() # Add snow animation
-                    st.rerun() # Rerun to update the page state immediately
                 else:
-                    st.error("Invalid username/email or password.")
+                    success, user = login_user(identifier, password) # Pass identifier to login_user
+                    if success:
+                        st.session_state['logged_in'] = True
+                        st.session_state['username'] = user['username']
+                        st.session_state['user_id'] = user['id'] # Store user ID for database operations
+                        
+                        # Load prediction history from database
+                        st.session_state['prediction_history'] = load_prediction_history(user['id'])
+                        
+                        st.success(f"Welcome back, {st.session_state['username']}!")
+                        st.balloons()
+                        st.snow() # Add snow animation
+                        st.rerun() # Rerun to update the page state immediately
+                    else:
+                        st.error("Invalid username/email or password.")
 
     elif selected == "Register":
         st.subheader("Create Account")
@@ -414,11 +511,7 @@ def show_main_app():
                                 st.info("If you're experiencing a mental health emergency, please contact a mental health professional or crisis helpline immediately.")
                             
                             # Save result to history
-                            if 'prediction_history' not in st.session_state:
-                                st.session_state.prediction_history = []
-                            
-                            import datetime
-                            st.session_state.prediction_history.append({
+                            prediction_data = {
                                 'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                                 'model_used': model_choice,
                                 'ensemble_prediction': ensemble_pred,
@@ -428,7 +521,19 @@ def show_main_app():
                                 'primary_prediction': primary_pred,
                                 'risk_level': risk_level,
                                 'features': api_data
-                            })
+                            }
+                            
+                            if 'prediction_history' not in st.session_state:
+                                st.session_state.prediction_history = []
+                            
+                            # Add to session state
+                            st.session_state.prediction_history.append(prediction_data)
+                            
+                            # Save prediction to database
+                            if save_prediction_to_db(st.session_state['user_id'], prediction_data):
+                                st.success("Prediction saved to your history!")
+                            else:
+                                st.warning("Could not save prediction to history. Your results may not appear after logging out.")
                         else:
                             st.error(f"API Error: {response.status_code} - {response.text}")
                             
