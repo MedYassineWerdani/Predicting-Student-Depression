@@ -1,0 +1,10 @@
+streamlit
+streamlit-option-menu
+python-dotenv
+mysql-connector-python
+requests
+flask
+scikit-learn
+xgboost
+pandas
+numpy
