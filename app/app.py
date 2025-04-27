@@ -263,10 +263,223 @@ def main():
 # --- Logged-in View (Simplified) ---
 def show_main_app():
     st.sidebar.success(f"Logged in as {st.session_state.get('username', 'User')}")
-    st.header("🧠 Student Depression Prediction App")
-    st.success("You are successfully logged in!") # Confirmation message
-    st.write("Welcome! The main application content will be built here.") # Simple placeholder text
-
+    
+    # Use tabs for different sections of the app
+    tab1, tab2, tab3 = st.tabs(["Predict Depression", "About", "History"])
+    
+    with tab1:
+        st.header("🧠 Student Depression Prediction")
+        st.write("Fill in the form below to predict your risk of depression.")
+        
+        # Make model selection more obvious above the form
+        st.subheader("Step 1: Select Prediction Model")
+        model_choice = st.selectbox(
+            "Which model would you like to use for prediction?",
+            options=["Ensemble (All Models)", "Random Forest", "XGBoost", "Logistic Regression"],
+            index=0,
+            help="Choose which machine learning model to use for your depression prediction"
+        )
+        
+        st.write(f"You selected: **{model_choice}**")
+        st.divider()
+        
+        # Create the prediction form
+        st.subheader("Step 2: Enter Your Information")
+        with st.form("prediction_form"):
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                age = st.number_input("Age", min_value=15, max_value=100, value=20)
+                sleep_duration = st.selectbox(
+                    "Sleep Duration", 
+                    options=["Less than 5 hours", "5-6 hours", "7-8 hours", "More than 8 hours", "Others"],
+                    index=1
+                )
+                dietary_habits = st.selectbox(
+                    "Dietary Habits",
+                    options=["Regular", "Irregular", "Vegetarian", "Non-vegetarian", "Vegan"],
+                    index=0
+                )
+                academic_pressure = st.slider("Academic Pressure (1-10)", 1, 10, 5)
+                cgpa = st.slider("CGPA (0-10)", 0.0, 10.0, 7.0, 0.1)
+                
+            with col2:
+                study_satisfaction = st.slider("Study Satisfaction (1-10)", 1, 10, 5)
+                work_study_hours = st.number_input("Work/Study Hours per day", min_value=1, max_value=24, value=8)
+                financial_stress = st.slider("Financial Stress (1-10)", 1, 10, 5)
+                suicidal_thoughts = st.radio("Have you ever had suicidal thoughts?", ["No", "Yes"])
+                illness_history = st.radio("Family history of mental illness?", ["No", "Yes"])
+                degree = st.selectbox(
+                    "Degree Program",
+                    options=["Bachelor's", "Master's", "PhD", "Others"],
+                    index=0
+                )
+            
+            # Remind user of their model choice
+            st.info(f"You will be using the **{model_choice}** for prediction.")
+            submit_button = st.form_submit_button("Predict")
+            
+            if submit_button:
+                try:
+                    # Import necessary libraries for API requests
+                    import requests
+                    import json
+                    
+                    # Prepare data for API request
+                    api_data = {
+                        'age': age,
+                        'dietary_habits': dietary_habits,
+                        'degree': degree,
+                        'academic_pressure': academic_pressure,
+                        'cgpa': cgpa,
+                        'study_satisfaction': study_satisfaction,
+                        'work_study_hours': work_study_hours,
+                        'sleep_duration': sleep_duration,
+                        'financial_stress': financial_stress,
+                        'suicidal_thoughts': suicidal_thoughts,
+                        'illness_history': illness_history,
+                        'model_choice': model_choice  # Add the model choice to API data
+                    }
+                    
+                    # API endpoint (using localhost, adjust as needed for production)
+                    api_url = "http://localhost:5000/predict"
+                    
+                    # Show loading spinner while waiting for API response
+                    with st.spinner("Getting prediction results..."):
+                        # Send POST request to API
+                        response = requests.post(api_url, json=api_data, timeout=10)
+                        
+                        # Verify response
+                        if response.status_code == 200:
+                            result = response.json()
+                            
+                            # Extract prediction values
+                            rf_pred = result.get('rf_prediction', 0)
+                            xgb_pred = result.get('xgb_prediction', 0)
+                            lr_pred = result.get('lr_prediction', 0)
+                            ensemble_pred = result.get('ensemble_prediction', 0)
+                            primary_pred = result.get('primary_prediction', ensemble_pred)  # Get the primary prediction
+                            risk_level = result['risk_level']
+                            message = result['message']
+                            
+                            # Display results
+                            st.subheader("Prediction Results")
+                            
+                            # If selected a specific model, highlight that one
+                            if model_choice == "Random Forest":
+                                st.metric(label="📊 Random Forest (Selected)", value=f"{rf_pred:.2%}")
+                                st.divider()
+                                col1, col2 = st.columns(2)
+                                with col1:
+                                    st.metric(label="XGBoost", value=f"{xgb_pred:.2%}")
+                                with col2:
+                                    st.metric(label="Logistic Regression", value=f"{lr_pred:.2%}")
+                            elif model_choice == "XGBoost":
+                                st.metric(label="📊 XGBoost (Selected)", value=f"{xgb_pred:.2%}")
+                                st.divider()
+                                col1, col2 = st.columns(2)
+                                with col1:
+                                    st.metric(label="Random Forest", value=f"{rf_pred:.2%}")
+                                with col2:
+                                    st.metric(label="Logistic Regression", value=f"{lr_pred:.2%}")
+                            elif model_choice == "Logistic Regression":
+                                st.metric(label="📊 Logistic Regression (Selected)", value=f"{lr_pred:.2%}")
+                                st.divider()
+                                col1, col2 = st.columns(2)
+                                with col1:
+                                    st.metric(label="Random Forest", value=f"{rf_pred:.2%}")
+                                with col2:
+                                    st.metric(label="XGBoost", value=f"{xgb_pred:.2%}")
+                            else:
+                                # Show all models with equal weight (Ensemble option)
+                                col1, col2, col3, col4 = st.columns(4)
+                                with col1:
+                                    st.metric(label="Random Forest", value=f"{rf_pred:.2%}")
+                                with col2:
+                                    st.metric(label="XGBoost", value=f"{xgb_pred:.2%}")
+                                with col3:
+                                    st.metric(label="Logistic Regression", value=f"{lr_pred:.2%}")
+                                with col4:
+                                    st.metric(label="📊 Ensemble", value=f"{ensemble_pred:.2%}")
+                            
+                            # Add interpretation
+                            st.subheader("Interpretation")
+                            
+                            if risk_level == "Low":
+                                st.success(f"Low risk of depression detected. {message}")
+                            elif risk_level == "Moderate":
+                                st.warning(f"Moderate risk of depression detected. {message}")
+                            else:
+                                st.error(f"High risk of depression detected. {message}")
+                                st.info("If you're experiencing a mental health emergency, please contact a mental health professional or crisis helpline immediately.")
+                            
+                            # Save result to history
+                            if 'prediction_history' not in st.session_state:
+                                st.session_state.prediction_history = []
+                            
+                            import datetime
+                            st.session_state.prediction_history.append({
+                                'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                'model_used': model_choice,
+                                'ensemble_prediction': ensemble_pred,
+                                'rf_prediction': rf_pred,
+                                'xgb_prediction': xgb_pred,
+                                'lr_prediction': lr_pred,
+                                'primary_prediction': primary_pred,
+                                'risk_level': risk_level,
+                                'features': api_data
+                            })
+                        else:
+                            st.error(f"API Error: {response.status_code} - {response.text}")
+                            
+                except requests.exceptions.ConnectionError:
+                    st.error("Failed to connect to the API server. Please ensure the Flask API is running at http://localhost:5000")
+                except Exception as e:
+                    st.error(f"An error occurred: {e}")
+    
+    with tab2:
+        st.header("About Student Depression Prediction")
+        st.write("""
+        ### What This App Does
+        This app uses machine learning models trained on a dataset of student characteristics to predict the likelihood of depression.
+        
+        ### The Models
+        We've trained three different models:
+        - **Random Forest**: A powerful ensemble learning method that builds multiple decision trees.
+        - **XGBoost**: An optimized gradient boosting library designed for efficiency and performance.
+        - **Logistic Regression**: A statistical model that uses a logistic function to model a binary dependent variable.
+        
+        ### Important Features
+        Our models found these factors most predictive of student depression:
+        - Academic pressure and stress
+        - Sleep quality and duration
+        - History of suicidal thoughts
+        - Family history of mental illness
+        - Academic satisfaction and performance
+        
+        ### Disclaimer
+        This tool is for educational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment.
+        """)
+        
+        st.info("If you're experiencing thoughts of harming yourself or others, please contact a mental health professional or crisis helpline immediately.")
+    
+    with tab3:
+        st.header("Your Prediction History")
+        if 'prediction_history' in st.session_state and st.session_state.prediction_history:
+            for i, pred in enumerate(st.session_state.prediction_history):
+                with st.expander(f"Prediction {i+1} - {pred['timestamp']}"):
+                    st.write(f"**Depression Risk:** {pred['ensemble_prediction']:.2%}")
+                    st.write(f"Risk Level: {pred.get('risk_level', 'Unknown')}")
+                    st.write(f"Random Forest: {pred['rf_prediction']:.2%}, XGBoost: {pred['xgb_prediction']:.2%}, Logistic Regression: {pred['lr_prediction']:.2%}")
+                    
+                    # Show feature values
+                    st.write("**Input Features:**")
+                    # Filter out derived features
+                    base_features = {k: v for k, v in pred['features'].items()}
+                    st.json(base_features)
+        else:
+            st.write("No prediction history yet. Make a prediction to see it here.")
+            
     # Logout button remains in the sidebar
     if st.sidebar.button("Logout"):
         # Clear session state more robustly
