@@ -2,6 +2,11 @@ import streamlit as st
 import mysql.connector
 from mysql.connector import Error
 from streamlit_option_menu import option_menu
+import os # Import os module
+from dotenv import load_dotenv # Import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # --- UI Enhancements ---
 st.set_page_config(page_title="Login & Register", page_icon="🧠", layout="wide") # Changed icon, wider layout
@@ -70,10 +75,10 @@ st.markdown("""
 def get_db_connection():
     try:
         conn = mysql.connector.connect(
-            host="db4free.net",
-            database="sigmatroll1",
-            user="sigmatroll1",
-            password="SigmaTroll123698745621325871"
+            host=os.getenv("DB_HOST"), # Use environment variable
+            database=os.getenv("DB_DATABASE"), # Use environment variable
+            user=os.getenv("DB_USER"), # Use environment variable
+            password=os.getenv("DB_PASSWORD") # Use environment variable
         )
         # Create table if it doesn't exist (simple check)
         cursor = conn.cursor()
