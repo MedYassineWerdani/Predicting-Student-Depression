@@ -464,7 +464,7 @@ def main():
         del st.session_state['registration_success'] # Clear the flag immediately
     # Centered image and title
     st.image("https://cdn-icons-png.flaticon.com/512/1048/1048948.png", width=100) # Brain icon
-    st.title("Student Depression DEPLOY TEST Prediction")
+    st.title("Student Depression Prediction")
     st.markdown("<p style='text-align: center; color: #6c757d;'>Login or Register to continue</p>", unsafe_allow_html=True)
     st.divider()
     # Determine the default index for the menu based on session state
