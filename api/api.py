@@ -128,7 +128,7 @@ def preprocess_for_logistic_regression(data_dict):
 @app.route('/health', methods=['GET'])
 def health_check():
     # Also return the feature names for debugging
-    return jsonify({'status': 'ok', 'message': 'API is running', 'features': feature_names.tolist() if hasattr(feature_names, 'tolist') else feature_names, 'test': 'auto-redeploy'})
+    return jsonify({'status': 'ok', 'message': 'API is running', 'features': feature_names.tolist() if hasattr(feature_names, 'tolist') else feature_names})
 
 @app.route('/predict', methods=['POST'])
 def predict():
