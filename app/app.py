@@ -1035,3 +1035,13 @@ if __name__ == "__main__":
         show_main_app() 
     else:
         main()
+    
+    # Add credits at the bottom of the page
+    st.markdown("---")
+    st.markdown("""
+    <div style="text-align: center; margin-top: 30px; padding: 15px; background-color: #212529; border-radius: 5px; border-left: 3px solid #007bff;">
+        <p style="margin-bottom: 5px; font-weight: bold; color: #ffffff;">Project by:</p>
+        <p style="margin: 2px; color: #e9ecef;">Abderrahmen Youssef - <a href="mailto:abderrahmen.youssef@polytechnicien.tn" style="color: #007bff;">abderrahmen.youssef@polytechnicien.tn</a></p>
+        <p style="margin: 2px; color: #e9ecef;">Mohamed Yassine El Wardani - <a href="mailto:mohamedyassine.elwerdani@polytechnicien.tn" style="color: #007bff;">mohamedyassine.elwerdani@polytechnicien.tn</a></p>
+    </div>
+    """, unsafe_allow_html=True)
