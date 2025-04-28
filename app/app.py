@@ -5,6 +5,8 @@ from streamlit_option_menu import option_menu
 import os # Import os module
 from dotenv import load_dotenv # Import load_dotenv
 import datetime # Added datetime import
+import json
+import openai # Import OpenAI for OpenRouter API calls
 
 # Load environment variables from .env file
 load_dotenv()
@@ -456,6 +458,40 @@ def load_prediction_history(user_id):
         cursor.close()
         conn.close()
 
+# --- OpenRouter API Integration ---
+def get_openrouter_response(messages):
+    """
+    Function to call OpenRouter API to get chatbot responses
+    """
+    try:
+        # Configure OpenAI with OpenRouter API key and base URL
+        client = openai.OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=os.getenv("OPENROUTER_API_KEY"),
+            # Add default headers as part of the client config
+            default_headers={
+                "HTTP-Referer": "https://studentdepressionapp.com",
+                "X-Title": "Student Depression Support Chatbot"
+            }
+        )
+        
+        # Call the chat completions API with the user's messages
+        response = client.chat.completions.create(
+            model=os.getenv("OPENROUTER_MODEL_ID"),  # Use model from .env
+            messages=messages,
+            temperature=0.7,
+            max_tokens=800,
+            top_p=1,
+            stream=False
+            # Headers are now configured when creating the client
+        )
+        
+        # Extract and return the assistant's response
+        return response.choices[0].message.content
+    except Exception as e:
+        st.error(f"Error calling OpenRouter API: {str(e)}")
+        return "I'm sorry, I'm having trouble responding right now. Please try again later."
+
 # --- Main App Layout ---
 def main():
     # Check if we just successfully registered and show toast
@@ -544,7 +580,7 @@ def show_main_app():
             <div>Welcome, <strong>{username}</strong></div>
         </div>
         """, unsafe_allow_html=True)
-    tab1, tab2, tab3 = st.tabs(["🔍 Predict Depression", "ℹ️ About", "📊 History"])
+    tab1, tab2, tab3, tab4 = st.tabs(["🔍 Predict Depression", "ℹ️ About", "📊 History", "💬 Mental Health Chatbot"])
     with tab1:
         st.header("🧠 Student Depression Prediction")
         st.markdown("""
@@ -935,6 +971,57 @@ def show_main_app():
                 <p style="margin-top:15px;">Make your first prediction to start tracking your mental health</p>
             </div>
             """, unsafe_allow_html=True)
+    with tab4:
+        st.header("🤖 Mental Health Support Chatbot")
+        
+        st.markdown("""
+        <div class="form-section" style="border-left-color: #17a2b8;">
+            <h3>How Can I Help?</h3>
+            <p style="color: #e9ecef;">I'm here to listen, provide support, and offer recommendations for managing mental health challenges. You can talk to me about:</p>
+            <ul style="color: #e9ecef;">
+                <li><strong style="color: #ffffff;">Stress management techniques</strong></li>
+                <li><strong style="color: #ffffff;">Coping with academic pressure</strong></li>
+                <li><strong style="color: #ffffff;">Self-care strategies for mental health</strong></li>
+                <li><strong style="color: #ffffff;">Finding motivation and maintaining focus</strong></li>
+                <li><strong style="color: #ffffff;">General mental health questions</strong></li>
+            </ul>
+            <p style="color: #e9ecef;">⚠️ <i>Remember: I'm not a replacement for professional mental health services. If you're experiencing a crisis, please contact a mental health professional.</i></p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Initialize chat history in session state if it doesn't exist
+        if "chat_messages" not in st.session_state:
+            st.session_state.chat_messages = [
+                {"role": "system", "content": "You are a supportive, empathetic, and knowledgeable AI assistant specializing in student mental health. Your purpose is to provide guidance, coping strategies, and mental health support for students experiencing depression, anxiety, academic stress, or seeking general mental wellness advice. Your responses should be compassionate, evidence-based, and appropriate for someone who may be experiencing mental health challenges. If a user appears to be in crisis, always encourage them to seek professional help while providing immediate supportive responses."},
+                {"role": "assistant", "content": "👋 Hi there! I'm your mental health support chatbot. How are you feeling today, and how can I help you?"}
+            ]
+        
+        # Display chat messages
+        for message in st.session_state.chat_messages:
+            if message["role"] != "system":
+                with st.chat_message(message["role"]):
+                    st.write(message["content"])
+        
+        # Get user input
+        if user_input := st.chat_input("Type your message here..."):
+            # Add user message to chat history and display it
+            st.session_state.chat_messages.append({"role": "user", "content": user_input})
+            with st.chat_message("user"):
+                st.write(user_input)
+            
+            # Generate a response using OpenRouter API
+            with st.spinner("Thinking..."):
+                messages_for_api = [
+                    {"role": "system", "content": "You are a supportive, empathetic, and knowledgeable AI assistant specializing in student mental health support. Focus on providing evidence-based coping strategies, mental wellness advice, and academic stress management techniques. Your purpose is to help students with depression, anxiety, academic stress, and general mental wellness. Your responses should be compassionate and appropriate for someone who may be experiencing mental health challenges. If a user appears to be in crisis, always encourage them to seek professional help. Keep responses helpful but concise (under 250 words). Never introduce yourself as any specific AI model."},
+                    *[{"role": m["role"], "content": m["content"]} for m in st.session_state.chat_messages if m["role"] != "system"]
+                ]
+                response = get_openrouter_response(messages_for_api)
+                
+                # Add response to chat history and display it
+                st.session_state.chat_messages.append({"role": "assistant", "content": response})
+                with st.chat_message("assistant"):
+                    st.write(response)
+            
     with st.sidebar:
         if st.button("Logout", key="logout_btn"):
             keys_to_delete = list(st.session_state.keys())
