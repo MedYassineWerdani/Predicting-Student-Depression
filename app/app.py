@@ -682,7 +682,7 @@ def show_main_app():
                         'illness_history': illness_history,
                         'model_choice': model_choice, 
                     }
-                    api_url = "http://localhost:5000/predict"
+                    api_url = os.getenv("API_URL")
                     with st.spinner("📊 Analyzing your data..."):
                         import time
                         time.sleep(0.5)
