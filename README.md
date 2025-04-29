@@ -1,6 +1,6 @@
 # Predicting Student Depression
 
-![Project Banner](images/3.png)
+![Project Banner](images/banner.png)
 
 ## Project Overview
 
@@ -28,7 +28,9 @@ Our site is fully autonomous with an automated workflow from development to prod
 ## Data Understanding
 
 ### Data Source
-The project uses a structured dataset (`student_depression_dataset.csv`) containing information about students' academic and personal attributes, with depression status as the target variable.
+The project uses a structured dataset (`student_depression_dataset.csv`) from Kaggle containing information about students' academic and personal attributes, with depression status as the target variable.
+
+**Kaggle Dataset Source**: [Student Depression Dataset](https://www.kaggle.com/datasets/adilshamim8/student-depression-dataset)
 
 ### Data Overview
 
@@ -62,13 +64,13 @@ flowchart TD
 
 #### Sample Data (First 5 rows)
 
-| Age | Gender | Academic Pressure | CGPA | Study Satisfaction | Sleep Duration | Dietary Habits | Depression |
-|-----|--------|-------------------|------|-------------------|----------------|---------------|------------|
-| 33.0 | Male | 5.0 | 8.97 | 2.0 | 5-6 hours | Healthy | 1 |
-| 24.0 | Female | 2.0 | 5.9 | 5.0 | 5-6 hours | Moderate | 0 |
-| 31.0 | Male | 3.0 | 7.03 | 5.0 | Less than 5 hours | Healthy | 0 |
-| 28.0 | Female | 3.0 | 5.59 | 2.0 | 7-8 hours | Moderate | 1 |
-| 25.0 | Female | 4.0 | 8.13 | 3.0 | 5-6 hours | Moderate | 0 |
+| Age | Gender | Academic Pressure | CGPA | Study Satisfaction | Sleep Duration | Dietary Habits | Suicidal Thoughts | Financial Stress | Illness History | Depression |
+|-----|--------|-------------------|------|-------------------|----------------|---------------|------------------|-----------------|----------------|------------|
+| 22 | Male | 4 | 3.5 | 3 | 5-6 hours | Healthy | No | 3 | No | 0 |
+| 20 | Female | 4 | 3.2 | 2 | Less than 5 hours | Moderate | No | 4 | No | 1 |
+| 19 | Male | 5 | 3.7 | 1 | 5-6 hours | Unhealthy | Yes | 5 | Yes | 1 |
+| 21 | Female | 3 | 3.0 | 4 | 7-8 hours | Moderate | No | 2 | No | 0 |
+| 23 | Male | 5 | 2.8 | 2 | Less than 5 hours | Unhealthy | Yes | 4 | No | 1 |
 
 ## Data Preparation & Pipelines
 
@@ -104,6 +106,8 @@ After correlation analysis, several features were dropped to improve model perfo
 - Gender
 - Work pressure
 - Job satisfaction
+
+![Correlation Matrix](images/collorationmatrix.png)
 
 ## Modeling Approach
 
@@ -161,12 +165,16 @@ graph LR
 
 ### Performance Comparison
 
+![Model Performance Comparison](images/modelperformancecomparasion.png)
+
+![Model Performance Benchmark](images/modelperformancebecnhmark.png)
+
 | Model | Accuracy | ROC-AUC | Precision | Recall |
 |-------|----------|---------|-----------|--------|
-| Random Forest | 0.85 | 0.88 | 0.83 | 0.84 |
-| XGBoost | 0.87 | 0.90 | 0.86 | 0.85 |
-| Logistic Regression | 0.82 | 0.84 | 0.80 | 0.81 |
-| Ensemble | 0.88 | 0.91 | 0.87 | 0.86 |
+| Random Forest | 0.8357 | 0.9103 | 0.84 | 0.88 |
+| XGBoost | 0.8389 | 0.9140 | 0.85 | 0.87 |
+| Logistic Regression | 0.8371 | 0.9136 | 0.85 | 0.88 |
+| Ensemble | 0.8420 | 0.9180 | 0.85 | 0.88 |
 
 ### Feature Importance
 
