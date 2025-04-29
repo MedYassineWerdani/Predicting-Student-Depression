@@ -83,15 +83,18 @@ The data preparation pipeline involves several key steps to transform raw data i
 
 ```mermaid
 flowchart LR
-    A[Raw Data] --> B[Data Cleaning]
-    B --> C[Feature Engineering]
-    C --> D[Feature Encoding]
-    D --> E[Train-Test Split]
-    E --> F[Model Training]
-    subgraph Feature Engineering
-        C1[Create academic_stress_combo] --- C2[Create burnout_index]
-        C2 --- C3[Create wellness_score]
+    subgraph subGraph0["Feature Engineering"]
+        C2["Create burnout_index"]
+        C1["Create academic_stress_combo"]
+        C3["Create wellness_score"]
     end
+    A["Raw Data"] --> B["Data Cleaning"]
+    B --> subGraph0
+    C1 --- C2
+    C2 --- C3
+    D["Feature Encoding"] --> E["Train-Test Split"]
+    E --> F["Model Training"]
+    subGraph0 --> D
 ```
 
 ### Preprocessing Steps:
@@ -187,7 +190,7 @@ Based on the performance metrics shown above, we can conclude that:
 
 ![Feature Importance](images/topfeatures_for_xgboost_and_randomforest.png)
 
-The visualization shows that suicidal thoughts, academic pressure, sleep duration, and financial stress are among the most important predictors of student depression.
+The visualization shows that suicidal thoughts, academic pressure, and financial stress are among the most important predictors of student depression.
 
 ## Chatbot & Fine-Tuning
 
@@ -289,7 +292,7 @@ flowchart LR
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/Predicting-Student-Depression.git
+git clone https://github.com/MedYassineWerdani/Predicting-Student-Depression.git
 cd Predicting-Student-Depression
 ```
 
