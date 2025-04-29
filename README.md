@@ -8,7 +8,6 @@ This machine learning project focuses on predicting depression in students based
 
 ### Key Features:
 - Multi-model prediction system (Random Forest, XGBoost, Logistic Regression)
-- Ensemble approach for more reliable predictions
 - Interactive web interface for easy data input
 - Risk level assessment and personalized recommendations
 - Visualization of key depression factors and their impact
@@ -117,17 +116,16 @@ After correlation analysis, several features were dropped to improve model perfo
 
 ## Modeling Approach
 
-This project implements multiple machine learning models to predict student depression, allowing for comparison and ensemble predictions:
+This project implements multiple machine learning models to predict student depression:
 
 ```mermaid
 flowchart TD
     A[Processed Data] --> B[Random Forest]
     A --> C[XGBoost]
     A --> D[Logistic Regression]
-    B --> E[Ensemble Model]
-    C --> E
-    D --> E
-    E --> F[Depression Prediction]
+    B --> F[Depression Prediction]
+    C --> F
+    D --> F
 ```
 
 ### Models Used:
@@ -146,11 +144,6 @@ flowchart TD
    - Baseline model with strong interpretability
    - Standardized features for better performance
 
-4. **Ensemble Model**
-   - Combines predictions from all three models
-   - Simple averaging of probabilities
-   - More robust than individual models
-
 ### Model Training Process:
 - Data split into 80% training and 20% test sets
 - StandardScaler applied for Logistic Regression
@@ -167,6 +160,7 @@ graph LR
     B[ROC-AUC Score] --> E
     C[Precision] --> E
     D[Recall] --> E
+    F[F1-Score] --> E
 ```
 
 ### Performance Comparison
@@ -174,13 +168,6 @@ graph LR
 ![Model Performance Comparison](images/modelperformancecomparasion.png)
 
 ![Model Performance Benchmark](images/modelperformancebecnhmark.png)
-
-| Model | Accuracy | ROC-AUC | Precision | Recall |
-|-------|----------|---------|-----------|--------|
-| Random Forest | 0.8357 | 0.9103 | 0.84 | 0.88 |
-| XGBoost | 0.8389 | 0.9140 | 0.85 | 0.87 |
-| Logistic Regression | 0.8371 | 0.9136 | 0.85 | 0.88 |
-| Ensemble | 0.8420 | 0.9180 | 0.85 | 0.88 |
 
 ### Feature Importance
 
@@ -268,7 +255,7 @@ Example API request:
   "financial_stress": 3,
   "suicidal_thoughts": "No",
   "illness_history": "No",
-  "model_choice": "Ensemble (All Models)"
+  "model_choice": "Logistic Regression"
 }
 ```
 
@@ -280,7 +267,7 @@ The Streamlit application provides an intuitive interface for users to input stu
 
 ### Key Features:
 - Form-based data entry with appropriate input types
-- Model selection dropdown (Random Forest, XGBoost, Logistic Regression, or Ensemble)
+- Model selection dropdown (Random Forest, XGBoost, Logistic Regression)
 - Results display with risk level and recommendations
 - Visual representation of prediction confidence
 - Explanation of key factors influencing the prediction
@@ -363,7 +350,7 @@ streamlit run app.py
 ### Example Use Case
 
 1. Enter student information in the Streamlit interface
-2. Choose a model (Ensemble recommended for best results)
+2. Choose a model (Logistic Regression recommended for best results)
 3. Submit and view the risk assessment
 4. Based on the risk level, implement appropriate interventions
 
