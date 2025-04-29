@@ -82,8 +82,8 @@ flowchart LR
     D --> E[Train-Test Split]
     E --> F[Model Training]
     subgraph Feature Engineering
-        C1[Create academic_stress_combo] --> C2[Create burnout_index]
-        C2 --> C3[Create wellness_score]
+        C1[Create academic_stress_combo] --- C2[Create burnout_index]
+        C2 --- C3[Create wellness_score]
     end
 ```
 
