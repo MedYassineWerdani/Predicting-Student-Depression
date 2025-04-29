@@ -50,17 +50,23 @@ flowchart TD
 
 | Feature | Description | Type | Values |
 |---------|-------------|------|--------|
-| Age | Student's age | Numeric | 18-42 years |
-| Gender | Student's gender | Categorical | Male, Female |
-| Academic Pressure | Level of academic stress | Numeric | 1-5 (low to high) |
-| CGPA | Cumulative Grade Point Average | Numeric | 0-10 |
-| Study Satisfaction | Satisfaction with studies | Numeric | 1-5 (low to high) |
-| Sleep Duration | Average sleep duration | Categorical | Less than 5 hours, 5-6 hours, 7-8 hours, More than 8 hours |
+| Gender | Student's gender | Categorical | Male or Female |
+| Age | Student's age | Numeric | Numerical (18-39 years) |
+| City | Student's location | Categorical | Geographical location |
+| Profession | Student's occupation | Categorical | Student or specific profession |
+| Academic Pressure | Level of academic stress | Numeric | Scale 1-5 (1=low, 5=high) |
+| Work Pressure | Level of professional stress | Numeric | Scale 0-5 (0=none, 5=high) |
+| CGPA | Cumulative Grade Point Average | Numeric | Academic performance (0-10 scale) |
+| Study Satisfaction | Satisfaction with studies | Numeric | Scale 1-5 (1=low, 5=high) |
+| Job Satisfaction | Satisfaction with job | Numeric | Scale 0-5 (0=none, 5=high) |
+| Sleep Duration | Average sleep duration | Categorical | Categories (Less than 5hrs to 8+ hrs) |
 | Dietary Habits | Eating patterns | Categorical | Healthy, Moderate, Unhealthy |
-| Suicidal Thoughts | Presence of suicidal thoughts | Binary | Yes, No |
-| Financial Stress | Level of financial stress | Numeric | 1-5 (low to high) |
-| Family History of Mental Illness | Mental illness history | Binary | Yes, No |
-| Depression | Target variable - depression status | Binary | 0 (No), 1 (Yes) |
+| Degree | Education qualification | Categorical | Academic degree being pursued |
+| Suicidal Thoughts | Presence of suicidal thoughts | Binary | Yes/No binary indicator |
+| Work/Study Hours | Hours spent on work/study | Numeric | Daily hours spent (0-12) |
+| Financial Stress | Level of financial stress | Numeric | Scale 1-5 (1=low, 5=high) |
+| Family History of Mental Illness | Mental illness history | Binary | Yes/No binary indicator |
+| Depression | Target variable - depression status | Binary | Target variable (0=No, 1=Yes) |
 
 #### Sample Data (First 5 rows)
 
