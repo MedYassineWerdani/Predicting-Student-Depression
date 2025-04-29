@@ -19,6 +19,12 @@ This machine learning project focuses on predicting depression in students based
 - Research on correlations between academic factors and depression
 - Individual students for self-assessment
 
+### Live Application:
+
+**Visit our live application**: [Predicting Student Depression App](https://predicting-student-depression.streamlit.app/)
+
+Our site is fully autonomous with an automated workflow from development to production, allowing us to focus on improving the models and user experience rather than managing deployment infrastructure.
+
 ## Data Understanding
 
 ### Data Source
@@ -76,7 +82,7 @@ flowchart LR
     D --> E[Train-Test Split]
     E --> F[Model Training]
     subgraph Feature Engineering
-        C1[Create academic_stress_combo] -->C2[Create burnout_index]
+        C1[Create academic_stress_combo] --> C2[Create burnout_index]
         C2 --> C3[Create wellness_score]
     end
 ```
@@ -166,7 +172,7 @@ graph LR
 
 ![Feature Importance](images/topfeatures_for_xgboost_and_randomforest.png)
 
-The visualization shows that academic pressure, sleep duration, and financial stress are among the most important predictors of student depression.
+The visualization shows that suicidal thoughts, academic pressure, sleep duration, and financial stress are among the most important predictors of student depression.
 
 ## Deployment
 
@@ -203,12 +209,6 @@ flowchart LR
    - Changes are automatically reflected in production
    - Full deployment history tracking
    - Easy rollbacks if needed
-
-### Live Application:
-
-**Visit our live application**: [Predicting Student Depression App](https://predicting-student-depression.streamlit.app/)
-
-Our site is fully autonomous with an automated workflow from development to production, allowing us to focus on improving the models and user experience rather than managing deployment infrastructure.
 
 ### Installation for Local Development:
 
