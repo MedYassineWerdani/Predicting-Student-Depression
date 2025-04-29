@@ -169,6 +169,20 @@ graph LR
 
 ![Model Performance Benchmark](images/modelperformancebecnhmark.png)
 
+#### Performance Analysis
+
+Based on the performance metrics shown above, we can conclude that:
+
+1. **XGBoost** demonstrates the best overall performance with the highest accuracy (0.8389) and ROC-AUC score (0.9140). Its superior precision and good recall indicate it excels at correctly identifying both depressed and non-depressed students.
+
+2. **Logistic Regression**, despite its simplicity, performs remarkably well with an accuracy of 0.8371 and ROC-AUC of 0.9136, showing that even simple models can be effective for this classification task when features are properly engineered.
+
+3. **Random Forest** provides solid performance (accuracy 0.8357, ROC-AUC 0.9103) with the added benefit of better interpretability through feature importance metrics.
+
+4. All models achieve ROC-AUC scores above 0.91, indicating excellent discriminative power in distinguishing between depressed and non-depressed students.
+
+5. The precision-recall trade-off is well-balanced across all models, with slightly higher recall than precision, which is appropriate for this use case where identifying at-risk students (minimizing false negatives) is generally more important than avoiding false alarms.
+
 ### Feature Importance
 
 ![Feature Importance](images/topfeatures_for_xgboost_and_randomforest.png)
