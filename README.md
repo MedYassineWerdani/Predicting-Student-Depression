@@ -64,13 +64,13 @@ flowchart TD
 
 #### Sample Data (First 5 rows)
 
-| Age | Gender | Academic Pressure | CGPA | Study Satisfaction | Sleep Duration | Dietary Habits | Suicidal Thoughts | Financial Stress | Illness History | Depression |
-|-----|--------|-------------------|------|-------------------|----------------|---------------|------------------|-----------------|----------------|------------|
-| 22 | Male | 4 | 3.5 | 3 | 5-6 hours | Healthy | No | 3 | No | 0 |
-| 20 | Female | 4 | 3.2 | 2 | Less than 5 hours | Moderate | No | 4 | No | 1 |
-| 19 | Male | 5 | 3.7 | 1 | 5-6 hours | Unhealthy | Yes | 5 | Yes | 1 |
-| 21 | Female | 3 | 3.0 | 4 | 7-8 hours | Moderate | No | 2 | No | 0 |
-| 23 | Male | 5 | 2.8 | 2 | Less than 5 hours | Unhealthy | Yes | 4 | No | 1 |
+| id | Gender | Age | City | Profession | Academic Pressure | Work Pressure | CGPA | Study Satisfaction | Job Satisfaction | Sleep Duration | Dietary Habits | Degree | Suicidal Thoughts | Work/Study Hours | Financial Stress | Illness History | Depression |
+|----|--------|-----|------|------------|-------------------|---------------|------|-------------------|------------------|----------------|---------------|--------|------------------|-----------------|-----------------|----------------|------------|
+| 2 | Male | 33.0 | Visakhapatnam | Student | 5.0 | 0.0 | 8.97 | 2.0 | 0.0 | 5-6 hours | Healthy | B.Pharm | Yes | 3.0 | 1.0 | No | 1 |
+| 8 | Female | 24.0 | Bangalore | Student | 2.0 | 0.0 | 5.90 | 5.0 | 0.0 | 5-6 hours | Moderate | BSc | No | 3.0 | 2.0 | Yes | 0 |
+| 26 | Male | 31.0 | Srinagar | Student | 3.0 | 0.0 | 7.03 | 5.0 | 0.0 | Less than 5 hours | Healthy | BA | No | 9.0 | 1.0 | Yes | 0 |
+| 30 | Female | 28.0 | Varanasi | Student | 3.0 | 0.0 | 5.59 | 2.0 | 0.0 | 7-8 hours | Moderate | BCA | Yes | 4.0 | 5.0 | Yes | 1 |
+| 32 | Female | 25.0 | Jaipur | Student | 4.0 | 0.0 | 8.13 | 3.0 | 0.0 | 5-6 hours | Moderate | M.Tech | Yes | 1.0 | 1.0 | No | 0 |
 
 ## Data Preparation & Pipelines
 
