@@ -175,6 +175,66 @@ graph LR
 
 The visualization shows that suicidal thoughts, academic pressure, sleep duration, and financial stress are among the most important predictors of student depression.
 
+## Chatbot & Fine-Tuning
+
+The application includes an integrated mental health support chatbot that provides students with guidance, coping strategies, and resources.
+
+```mermaid
+flowchart LR
+    A[User Message] --> B[OpenRouter API]
+    B -- LLM Processing --> C[AI Model]
+    C -- Generated Response --> D[Response to User]
+    E[System Prompt] --> C
+```
+
+### Integration Architecture
+
+The chatbot leverages OpenRouter's API to access state-of-the-art language models specifically designed for mental health support:
+
+1. **API Connection**: The application connects to OpenRouter using secure API authentication
+2. **System Prompt Engineering**: Custom prompt ensures responses are compassionate, evidence-based, and appropriate for mental health contexts
+3. **Contextual Memory**: The chatbot maintains conversation history to provide coherent, personalized responses
+4. **Crisis Response Protocol**: Built-in recognition of crisis language that triggers appropriate resource recommendations
+
+### Fine-Tuning Details
+
+The chatbot uses a specialized model for mental health support with the following characteristics:
+
+**Custom System Prompt**: 
+```
+You are a supportive, empathetic, and knowledgeable AI assistant specializing in student mental health. 
+Your purpose is to provide guidance, coping strategies, and mental health support for students experiencing 
+depression, anxiety, academic stress, or seeking general mental wellness advice. Your responses should be 
+compassionate, evidence-based, and appropriate for someone who may be experiencing mental health challenges. 
+If a user appears to be in crisis, always encourage them to seek professional help while providing immediate 
+supportive responses.
+```
+
+### Example Interactions
+
+**Example 1: Stress Management**
+```
+Student: "I'm feeling really overwhelmed with my coursework right now."
+
+Chatbot: "I understand how overwhelming coursework can feel. Consider breaking down large tasks into smaller, 
+manageable steps and prioritizing what needs immediate attention. Taking short breaks using techniques like 
+the Pomodoro method (25 minutes of work followed by a 5-minute break) can also help maintain focus without 
+burning out. Would you like some specific strategies for your particular situation?"
+```
+
+**Example 2: Crisis Support**
+```
+Student: "I don't see any point in continuing anymore."
+
+Chatbot: "I hear that you're going through something really difficult right now. These feelings are important 
+to address, and you deserve support. Please consider reaching out to a mental health professional who can 
+provide immediate help - you can text or call the 988 Suicide & Crisis Lifeline (call or text 988) anytime. 
+They have trained counselors available 24/7. Would it be possible for you to speak with someone you trust 
+about how you're feeling right now?"
+```
+
+The chatbot is designed as a supportive resource but always encourages seeking professional help for serious mental health concerns.
+
 ## Deployment
 
 The project is deployed through a Flask API and a Streamlit front-end application, with a fully automated CI/CD workflow:
