@@ -431,10 +431,9 @@ streamlit run app.py
 3. Submit and view the risk assessment
 4. Based on the risk level, implement appropriate interventions
 
-
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
 
 ## Authors
 
